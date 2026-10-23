@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Miniloja Pro | Estúdio de Vendas</title>
+    <!-- Biblioteca Edge TTS corrigida -->
+    <script src="https://cdn.jsdelivr.net/npm/edge-tts-js@1.0.4/dist/edge-tts.min.js"></script>
+    <style>
+        :root { 
+            --primary: #25D366; 
+            --dark: #0a0a0a; 
+            --card: #161616; 
+            --text: #e0e0e0; 
+            --accent: #ff9f43; 
+            --btn-bg: #1f1f1f;
+            --btn-active: #25D366;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--dark); color: var(--text); padding-bottom: 40px; min-height: 100vh; }
+        
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        h1 { font-size: 1.4rem; text-align: center; margin-bottom: 5px; background: linear-gradient(90deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { text-align: center; font-size: 0.85rem; opacity: 0.7; margin-bottom: 25px; }
+        
+        /* NOVO GRID DE NAVEGAÇÃO 3x2 */
+        .nav-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 10px; 
+            margin-bottom: 25px; 
+        }
+        
+        .nav-btn {
+            background: var(--btn-bg);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 15px 5px;
+            color: #888;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .nav-btn span.icon { font-size: 1.4rem; display: block; margin-bottom: 2px; }
+        
+        .nav-btn.active { 
+            background: var(--btn-active); 
+            color: #000; 
+            border-color: var(--btn-active);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+
+        /* Inputs e Cards */
+        input, select, textarea { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #333; background: #1f1f1f; color: white; font-size: 1rem; outline: none; }
+        input:focus, textarea:focus { border-color: var(--primary); }
+        label { font-size: 0.75rem; color: #888; margin-bottom: 4px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 3px solid var(--primary); }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 8px; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: #000; }
+        .btn-record { background: #ff4757; color: white; animation: pulse 2s infinite; }
+        .btn-secondary { background: #333; color: white; }
+        
+        /* Mídia */
+        .media-preview { width: 100%; height: 200px; background: #000; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        audio { width: 100%; margin-top: 10px; }
+        img.preview-img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+        
+        .result-area { display: none; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+        .link-box { background: #111; padding: 12px; border-radius: 8px; word-break: break-all; font-family: monospace; font-size: 0.8rem; color: var(--primary); margin: 10px 0; border: 1px dashed #333; }
+        
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); } }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>MINILOJA PRO ESTÚDIO</h1>
+    <p class="subtitle">Gere links, grave áudios e vídeos. Tudo salvo no seu aparelho.</p>
+
+    <!-- NOVA NAVEGAÇÃO EM GRID 3x2 -->
+    <div class="nav-grid">
+        <button class="nav-btn active" onclick="switchTab('produtos')">
+            <span class="icon">🛍️</span> Produtos
+        </button>
+        <button class="nav-btn" onclick="switchTab('midia')">
+            <span class="icon">🖼️</span> Mídia & Som
+        </button>
+        <button class="nav-btn" onclick="switchTab('audio')">
+            <span class="icon">🎙️</span> Narrador IA
+        </button>
+        <button class="nav-btn" onclick="switchTab('camera')">
+            <span class="icon">📹</span> Câmera
+        </button>
+        <button class="nav-btn" onclick="switchTab('drive')">
+            <span class="icon">☁️</span> Backup Drive
+        </button>
+        <button class="nav-btn" onclick="switchTab('ids')">
+            <span class="icon">⚙️</span> Meus IDs
+        </button>
+    </div>
+
+    <!-- CONTEÚDO DAS ABAS -->
+    
+    <!-- ABA PRODUTOS -->
+    <div id="tab-produtos">
+        <div id="products-list"></div>
+        <button class="btn btn-secondary" onclick="addProduct()">+ Novo Produto</button>
+        <button class="btn btn-primary" onclick="generateFinalLinks()" style="margin-top:20px;">⚡ GERAR LINKS FINAIS</button>
+    </div>
+
+    <!-- ABA MÍDIA E SOM -->
+    <div id="tab-midia" class="hidden">
+        <div class="card">
+            <label>Imagem de Capa do Produto</label>
+            <input type="file" id="prod-image" accept="image/*" onchange="handleImage(this)">
+            <div id="image-preview" class="media-preview" style="height:150px; margin-top:10px;">
+                <span style="color:#555;">Sem imagem selecionada</span>
+            </div>
+            
+            <label style="margin-top:15px;">🎵 Música de Fundo (Viral)</label>
+            <select id="bg-music" onchange="updateMusic()">
+                <option value="">Sem música</option>
+                <option value="trending1">🔥 Funk Viral (Trending)</option>
+                <option value="lofi1">☕ Lo-Fi Relax (Fundo)</option>
+                <option value="upbeat1">⚡ Upbeat Tech (Dinâmico)</option>
+            </select>
+            <small style="color:#666; display:block; margin-top:5px;">A música tocará quando o cliente clicar em "Ver Oferta"</small>
+        </div>
+    </div>
+
+    <!-- ABA NARRADOR IA -->
+    <div id="tab-audio" class="hidden">
+        <div class="card">
+            <label>Texto para Falar (SSML Humanizado)</label>
+            <textarea id="tts-text" rows="4">Olá! <break time="300ms"/> Separei uma oferta incrível pra você hoje. <break time="500ms"/> É o nosso best-seller com desconto exclusivo!</textarea>
+            
+            <label>Voz e Entonação</label>
+            <select id="tts-voice">
+                <option value="pt-BR-FranciscaNeural">Francisca (Natural/Feminina)</option>
+                <option value="pt-BR-AntonioNeural">Antônio (Sério/Masculino)</option>
+                <option value="pt-BR-BrendaNeural">Brenda (Jovem/Dinâmica)</option>
+            </select>
+
+            <button class="btn btn-primary" onclick="playTTS()">▶️ Ouvir Prévia da Voz</button>
+        </div>
+    </div>
+
+    <!-- ABA CÂMERA -->
+    <div id="tab-camera" class="hidden">
+        <div class="card">
+            <label>Gravar Vídeo do Produto</label>
+            <div class="media-preview" id="video-preview">
+                <span style="color:#555;">Toque em "Iniciar Câmera"</span>
+            </div>
+            <video id="live-video" autoplay playsinline muted class="hidden"></video>
+            
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-secondary" onclick="startCamera()">📷 Iniciar Câmera</button>
+                <button class="btn btn-record hidden" id="btn-rec" onclick="toggleRecording()"> Gravar</button>
+            </div>
+            <video id="recorded-video" controls class="hidden" style="margin-top:10px;"></video>
+        </div>
+
+        <div class="card" style="margin-top:15px;">
+            <label>Gravar Áudio Próprio</label>
+            <button class="btn btn-record" id="btn-audio-rec" onclick="toggleAudioRec()"> Segure para Gravar Áudio</button>
+            <audio id="recorded-audio" controls class="hidden" style="margin-top:10px;"></audio>
+        </div>
+    </div>
+
+    <!-- ABA BACKUP DRIVE -->
+    <div id="tab-drive" class="hidden">
+        <div class="card">
+            <h3>☁️ Seu Cofre Digital no Google Drive</h3>
+            <p style="font-size:0.85rem; margin-bottom:15px; color:#aaa;">
+                Nunca mais perca seus clientes! Vamos criar uma pastinha segura na sua nuvem pessoal. 
+                Siga estes 3 passos simples:
+            </p>
+
+            <div style="background:#1f1f1f; padding:12px; border-radius:8px; margin-bottom:12px; border-left:3px solid #4285F4;">
+                <strong style="color:#4285F4; font-size:0.9rem;">PASSO 1: Criar a Pastinha</strong>
+                <p style="font-size:0.8rem; margin-top:5px; color:#ccc;">
+                    Toque no botão abaixo. Ele abrirá seu Google Drive. Lá, toque no botão "+" e escolha "Pasta". 
+                    Dê o nome de <b>"Miniloja"</b> e pronto!
+                </p>
+                <button class="btn btn-secondary" onclick="openDrive()" style="margin-top:8px; padding:10px; font-size:0.85rem;">
+                     Abrir Meu Google Drive Agora
+                </button>
+            </div>
+
+            <div style="background:#1f1f1f; padding:12px; border-radius:8px; margin-bottom:12px; border-left:3px solid #ff9f43;">
+                <strong style="color:#ff9f43; font-size:0.9rem;">PASSO 2: Copiar o "Endereço" da Pasta</strong>
+                <p style="font-size:0.8rem; margin-top:5px; color:#ccc;">
+                    Dentro da pasta "Miniloja", olhe para o endereço lá em cima. 
+                    É um monte de letras/números depois de <code>/folders/</code>. 
+                    <b>Copie apenas esse código</b> e cole aqui:
+                </p>
+                <input type="text" id="drive-folder-id" placeholder="Cole o código da pasta aqui..." 
+                       style="margin-top:8px; font-family:monospace; font-size:0.85rem;">
+            </div>
+
+            <button class="btn btn-primary" onclick="saveAndTestDrive()" style="width:100%; margin-top:5px;">
+                ✅ Salvar e Testar Conexão
+            </button>
+
+            <div id="drive-status" style="margin-top:15px; font-size:0.85rem; text-align:center; min-height:20px;"></div>
+
+            <div id="drive-actions" class="hidden" style="margin-top:20px; border-top:1px solid #333; padding-top:15px;">
+                <p style="font-size:0.8rem; color:#25D366; margin-bottom:10px;">✅ Sua pastinha está configurada!</p>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-secondary" onclick="backupToDrive()" style="flex:1; font-size:0.85rem;">️ Salvar Dados</button>
+                    <button class="btn btn-secondary" onclick="restoreFromDrive()" style="flex:1; font-size:0.85rem;">⬇️ Recuperar</button>
+                </div>
+                <small style="color:#666; display:block; margin-top:8px; font-size:0.75rem;">
+                    Ao salvar, um arquivo será baixado. Arraste-o para dentro da sua pasta "Miniloja" no Drive.
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABA IDS -->
+    <div id="tab-ids" class="hidden">
+        <div class="card">
+            <label>ID Shopee (af_id)</label>
+            <input type="text" id="id-shopee" placeholder="Ex: 123456789" oninput="saveIds()">
+            <label>Tag Amazon</label>
+            <input type="text" id="id-amazon" placeholder="Ex: loja-20" oninput="saveIds()">
+            <label>Loja Magalu</label>
+            <input type="text" id="id-magalu" placeholder="Ex: minhacasa" oninput="saveIds()">
+        </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div id="result-area" class="result-area">
+        <h3 style="color:var(--primary); margin-bottom:15px;">✅ Links Gerados</h3>
+        <div id="final-links-output"></div>
+    </div>
+</div>
+
+<script>
+    // --- ESTADO GLOBAL ---
+    let products = [];
+    let mediaRecorder;
+    let recordedChunks = [];
+    let cameraStream;
+    let audioStream;
+    let isRecording = false;
+    let currentImageBase64 = '';
+    let currentMusicUrl = '';
+
+    // --- INICIALIZAÇÃO ---
+    window.onload = () => {
+        const savedIds = JSON.parse(localStorage.getItem('affiliate_ids') || '{}');
+        document.getElementById('id-shopee').value = savedIds.shopee || '';
+        document.getElementById('id-amazon').value = savedIds.amazon || '';
+        document.getElementById('id-magalu').value = savedIds.magalu || '';
+        
+        products = JSON.parse(localStorage.getItem('affiliate_products') || '[]');
+        if(products.length === 0) addProduct();
+        else renderProducts();
+    };
+
+    function saveIds() {
+        localStorage.setItem('affiliate_ids', JSON.stringify({
+            shopee: document.getElementById('id-shopee').value,
+            amazon: document.getElementById('id-amazon').value,
+            magalu: document.getElementById('id-magalu').value
+        }));
+    }
+
+    // FUNÇÃO SWITCH TAB ATUALIZADA PARA O GRID
+    function switchTab(tabName) {
+        // Remove active de todos os botões do grid
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        // Esconde todas as abas
+        ['produtos','midia','audio','camera','drive','ids'].forEach(t => document.getElementById(`tab-${t}`).classList.add('hidden'));
+        
+        // Ativa o botão clicado
+        const clickedBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick').includes(tabName));
+        if(clickedBtn) clickedBtn.classList.add('active');
+        
+        // Mostra a aba correspondente
+        document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+        
+        // Lógica da câmera
+        if(tabName !== 'camera' && cameraStream) {
+            cameraStream.getTracks().forEach(track => track.stop());
+            document.getElementById('live-video').classList.add('hidden');
+            document.getElementById('video-preview').innerHTML = '<span style="color:#555;">Câmera desativada</span>';
+        }
+    }
+
+    // --- GESTÃO DE PRODUTOS ---
+    function addProduct() {
+        products.push({ platform: 'shopee', code: '', name: '', price: '', msg: '', image: '', mediaType: 'none' });
+        renderProducts();
+    }
+
+    function updateProd(i, field, val) {
+        products[i][field] = val;
+        localStorage.setItem('affiliate_products', JSON.stringify(products));
+    }
+
+    function renderProducts() {
+        const list = document.getElementById('products-list');
+        list.innerHTML = '';
+        products.forEach((p, i) => {
+            list.innerHTML += `
+                <div class="card">
+                    <select onchange="updateProd(${i}, 'platform', this.value)">
+                        <option value="shopee" ${p.platform==='shopee'?'selected':''}>Shopee</option>
+                        <option value="amazon" ${p.platform==='amazon'?'selected':''}>Amazon</option>
+                        <option value="magalu" ${p.platform==='magalu'?'selected':''}>Magalu</option>
+                    </select>
+                    <input type="text" placeholder="Código do Produto / ASIN" value="${p.code}" oninput="updateProd(${i}, 'code', this.value)">
+                    <input type="text" placeholder="Nome do Achadinho" value="${p.name}" oninput="updateProd(${i}, 'name', this.value)">
+                    <input type="text" placeholder="Preço / Oferta" value="${p.price}" oninput="updateProd(${i}, 'price', this.value)">
+                    <textarea rows="2" placeholder="Legenda persuasiva..." oninput="updateProd(${i}, 'msg', this.value)">${p.msg}</textarea>
+                    <div style="font-size:0.8rem; color:#888; margin-top:5px;">Mídia: ${p.image ? '📸 Imagem Adicionada' : p.mediaType === 'video' ? '🎥 Vídeo Gravado' : p.mediaType === 'audio' ? '🎤 Áudio Gravado' : '❌ Sem mídia'}</div>
+                </div>
+            `;
+        });
+    }
+
+    // --- FUNÇÕES DE MÍDIA ---
+    function handleImage(input) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentImageBase64 = e.target.result;
+                document.getElementById('image-preview').innerHTML = `<img src="${currentImageBase64}" class="preview-img">`;
+                if(products.length > 0) updateProd(products.length-1, 'image', currentImageBase64);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function updateMusic() {
+        const select = document.getElementById('bg-music');
+        const musicMap = {
+            'trending1': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+            'lofi1': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+            'upbeat1': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+        };
+        currentMusicUrl = musicMap[select.value] || '';
+        
+        if(currentMusicUrl) {
+            const testAudio = new Audio(currentMusicUrl);
+            testAudio.volume = 0.3;
+            testAudio.play().catch(e => console.log("Autoplay bloqueado até interação"));
+        }
+    }
+
+    // --- EDGE TTS CORRIGIDO VIA CDN ---
+    async function playTTS() {
+        const text = document.getElementById('tts-text').value;
+        const voiceSelect = document.getElementById('tts-voice');
+        const voiceName = voiceSelect.options[voiceSelect.selectedIndex].value;
+        
+        const btn = document.querySelector('#tab-audio .btn-primary');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Gerando áudio...';
+        btn.disabled = true;
+
+        try {
+            const tts = new EdgeTTS();
+            const audioBlob = await tts.synthesize({
+                text: text,
+                voice: voiceName,
+                rate: '-5%',
+                pitch: '+2Hz',
+                volume: '+0%'
+            });
+            
+            const url = URL.createObjectURL(audioBlob);
+            const audio = new Audio(url);
+            await audio.play();
+            
+        } catch (error) {
+            console.error("Erro Edge TTS:", error);
+            alert("Falha ao conectar com serviço de voz. Verifique sua internet.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    // --- CÂMERA E ÁUDIO ---
+    async function startCamera() {
+        try {
+            cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: true });
+            const videoEl = document.getElementById('live-video');
+            videoEl.srcObject = cameraStream;
+            videoEl.classList.remove('hidden');
+            document.getElementById('video-preview').innerHTML = '';
+            document.getElementById('btn-rec').classList.remove('hidden');
+        } catch(e) { alert("Permissão de câmera negada."); }
+    }
+
+    function toggleRecording() {
+        const btn = document.getElementById('btn-rec');
+        if(!isRecording) {
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(cameraStream);
+            mediaRecorder.ondataavailable = e => { if(e.data.size > 0) recordedChunks.push(e.data); };
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                const vid = document.getElementById('recorded-video');
+                vid.src = URL.createObjectURL(blob);
+                vid.classList.remove('hidden');
+                if(products.length > 0) updateProd(products.length-1, 'mediaType', 'video');
+            };
+            mediaRecorder.start();
+            btn.textContent = "⏹️ Parar";
+            btn.style.background = "#333";
+            isRecording = true;
+        } else {
+            mediaRecorder.stop();
+            btn.textContent = " Gravar";
+            btn.style.background = "#ff4757";
+            isRecording = false;
+        }
+    }
+
+    async function toggleAudioRec() {
+        const btn = document.getElementById('btn-audio-rec');
+        if(!isRecording) {
+            audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(audioStream);
+            mediaRecorder.ondataavailable = e => { if(e.data.size > 0) recordedChunks.push(e.data); };
+            mediaRecorder.onstop = () => {
+                const aud = document.getElementById('recorded-audio');
+                aud.src = URL.createObjectURL(new Blob(recordedChunks, { type: 'audio/webm' }));
+                aud.classList.remove('hidden');
+                if(products.length > 0) updateProd(products.length-1, 'mediaType', 'audio');
+            };
+            mediaRecorder.start();
+            btn.textContent = "⏹️ Parar Gravação";
+            isRecording = true;
+        } else {
+            mediaRecorder.stop();
+            audioStream.getTracks().forEach(t => t.stop());
+            btn.textContent = "🎤 Segure para Gravar Áudio";
+            isRecording = false;
+        }
+    }
+
+    // --- GERAÇÃO FINAL DE LINKS ---
+    function generateFinalLinks() {
+        const ids = JSON.parse(localStorage.getItem('affiliate_ids') || '{}');
+        const output = document.getElementById('final-links-output');
+        output.innerHTML = '';
+        document.getElementById('result-area').style.display = 'block';
+
+        products.forEach((p, i) => {
+            if(!p.code) return;
+            let url = '';
+            if(p.platform === 'shopee') url = `https://shope.ee/${p.code}?aff_id=${ids.shopee||''}`;
+            else if(p.platform === 'amazon') url = `https://www.amazon.com.br/dp/${p.code}?tag=${ids.amazon||''}`;
+            else if(p.platform === 'magalu') url = `https://www.magazineluiza.com.br/p/${p.code}/?st=${ids.magalu||''}`;
+
+            let fullMsg = `${p.msg}\n\n*${p.name}* ${p.price}\n`;
+            if(p.image) fullMsg += `📸 Veja a foto abaixo!\n`; 
+            if(currentMusicUrl) fullMsg += ` Ouça a trilha sonora!\n`;
+            fullMsg += `👉 ${url}\n\n_Aproveite antes que acabe!_`;
+            
+            const waLink = `https://wa.me/?text=${encodeURIComponent(fullMsg)}`;
+
+            output.innerHTML += `
+                <div class="card">
+                    <strong>${p.name || 'Produto '+(i+1)}</strong> <span style="font-size:0.7rem; background:#333; padding:2px 6px; border-radius:4px;">${p.platform.toUpperCase()}</span>
+                    <div class="link-box">${url}</div>
+                    <a href="${waLink}" target="_blank" class="btn btn-primary" style="padding:10px;"> Enviar no WhatsApp</a>
+                </div>
+            `;
+        });
+        document.getElementById('result-area').scrollIntoView({behavior:'smooth'});
+    }
+
+    // === FUNÇÕES DIDÁTICAS PARA GOOGLE DRIVE ===
+    function openDrive() {
+        window.open('https://drive.google.com/drive/my-drive', '_blank');
+    }
+
+    function saveAndTestDrive() {
+        const folderId = document.getElementById('drive-folder-id').value.trim();
+        const status = document.getElementById('drive-status');
+        
+        if(folderId.length < 20 || !/^[a-zA-Z0-9_-]+$/.test(folderId)) {
+            status.innerHTML = '<span style="color:#ff5555">❌ Código inválido. Copie apenas as letras/números após /folders/</span>';
+            return;
+        }
+        
+        localStorage.setItem('drive_folder_id', folderId);
+        status.innerHTML = '<span style="color:#25D366">✅ Perfeito! Sua pastinha foi conectada.</span>';
+        document.getElementById('drive-actions').classList.remove('hidden');
+        setTimeout(() => {
+            document.getElementById('drive-actions').scrollIntoView({behavior:'smooth'});
+        }, 500);
+    }
+
+    async function backupToDrive() {
+        const folderId = localStorage.getItem('drive_folder_id');
+        if(!folderId) return;
+        
+        const data = {
+            ids: JSON.parse(localStorage.getItem('affiliate_ids') || '{}'),
+            products: JSON.parse(localStorage.getItem('affiliate_products') || '[]'),
+            timestamp: new Date().toISOString()
+        };
+        
+        const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        
+        window.open(`https://drive.google.com/drive/folders/${folderId}`, '_blank');
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup_miniloja_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        
+        document.getElementById('drive-status').innerHTML = 
+            '<span style="color:#ff9f43">⚠️ Arquivo baixado! Arraste-o para a aba do Google Drive que abriu.</span>';
+    }
+
+    function restoreFromDrive() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = event => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    localStorage.setItem('affiliate_ids', JSON.stringify(data.ids));
+                    localStorage.setItem('affiliate_products', JSON.stringify(data.products));
+                    alert("✅ Dados recuperados! A página será recarregada.");
+                    location.reload(); 
+                } catch(err) {
+                    alert("❌ Arquivo inválido. Use um backup da Miniloja.");
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+    // === FIM DAS FUNÇÕES DE BACKUP ===
+</script>
+</body>
+</html>
